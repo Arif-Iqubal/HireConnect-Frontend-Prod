@@ -1,0 +1,131 @@
+<!-- src/app/features/candidate/applications/application-detail.component.html -->
+<div class="application-detail-container">
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading application details...</p>
+  </div>
+
+  <div *ngIf="!isLoading && application">
+    <!-- Back Navigation -->
+    <a routerLink="/candidate/applications" class="back-link"><span class="material-symbols-rounded">arrow_back</span> Back to My Applications</a>
+
+    <!-- Status Banner -->
+    <div class="status-banner" [class]="getStatusClass(application.status)">
+      <div class="status-content">
+        <span class="material-symbols-rounded status-icon">{{ getStatusIcon(application.status) }}</span>
+        <div>
+          <h2>{{ application.status.replace('_', ' ') }}</h2>
+          <p>{{ getStatusMessage(application.status) }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Application Timeline -->
+    <div class="timeline-section">
+      <h3>Application Timeline</h3>
+      <div class="timeline">
+        <div 
+          class="timeline-step"
+          *ngFor="let step of timelineSteps; let i = index"
+          [class.completed]="isStepCompleted(step.status)"
+          [class.active]="isStepActive(step.status)"
+          [class.rejected]="application.status === 'REJECTED' && step.status === 'OFFERED'">
+          
+          <div class="step-icon">
+            <span class="material-symbols-rounded">{{ step.icon }}</span>
+          </div>
+          <div class="step-line" *ngIf="i < timelineSteps.length - 1"></div>
+          <span class="step-label">{{ step.label }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Details -->
+    <div class="detail-card">
+      <h3>Job Details</h3>
+      <div class="job-info">
+        <h4>{{ application.job?.title }}</h4>
+        <p class="company">{{ application.job?.companyName }}</p>
+        <div class="job-meta">
+          <span><span class="material-symbols-rounded">location_on</span> {{ application.job?.location }}</span>
+          <span><span class="material-symbols-rounded">business_center</span> {{ application.job?.jobType?.replace('_', ' ') }}</span>
+          <span><span class="material-symbols-rounded">payments</span> {{ application.job?.salaryMin | currency }} - {{ application.job?.salaryMax | currency }}</span>
+        </div>
+        <a [routerLink]="['/jobs', application.jobId]" class="btn-view-job">View Job Details →</a>
+      </div>
+    </div>
+
+    <!-- Application Info -->
+    <div class="detail-card">
+      <h3>Application Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Applied On</span>
+          <span class="info-value">{{ application.appliedAt | date:'fullDate' }}</span>
+          <span class="info-sub">{{ application.appliedAt | date:'h:mm a' }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Current Status</span>
+          <span class="status-badge-sm" [class]="getStatusClass(application.status)">
+            {{ application.status.replace('_', ' ') }}
+          </span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Resume</span>
+         <a *ngIf="application.resumeUrl"
+   [href]="getResumeUrl()"
+   target="_blank"
+   rel="noopener noreferrer"
+   class="info-link"><span class="material-symbols-rounded">description</span> View Resume</a>
+          <span *ngIf="!application.resumeUrl" class="info-value">No resume attached</span>
+        </div>
+      </div>
+
+      <div class="cover-letter" *ngIf="application.coverLetter">
+        <h4>Your Cover Letter</h4>
+        <p>{{ application.coverLetter }}</p>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-buttons" *ngIf="application.status === 'APPLIED'">
+      <button 
+        class="btn-withdraw"
+        (click)="withdrawApplication()"
+        [disabled]="isWithdrawing">
+        {{ isWithdrawing ? 'Withdrawing...' : 'Withdraw Application' }}
+      </button>
+      <p class="withdraw-note">You can withdraw your application at any time before it is shortlisted.</p>
+    </div>
+
+    <!-- Next Steps -->
+    <div class="next-steps" *ngIf="application.status === 'INTERVIEW_SCHEDULED'">
+      <h3>Next Steps</h3>
+      <div class="steps-list">
+        <div class="step-item">
+          <span class="step-number">1</span>
+          <div>
+            <h4>Prepare for Interview</h4>
+            <p>Review the job description, research the company, and prepare your answers</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <span class="step-number">2</span>
+          <div>
+            <h4>Check Interview Details</h4>
+            <p>Confirm the date, time, and meeting link or location</p>
+            <a routerLink="/candidate/interviews" class="btn-link">View Interview Details →</a>
+          </div>
+        </div>
+        <div class="step-item">
+          <span class="step-number">3</span>
+          <div>
+            <h4>Follow Up</h4>
+            <p>Send a thank-you note within 24 hours after the interview</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

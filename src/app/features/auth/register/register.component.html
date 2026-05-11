@@ -1,0 +1,273 @@
+<!-- src/app/features/auth/register/register.component.html -->
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 relative overflow-hidden">
+  
+  <!-- Decorative Background -->
+  <div class="hidden sm:block absolute top-0 right-0 -mt-20 -mr-20">
+    <svg width="404" height="392" fill="none" viewBox="0 0 404 392">
+      <defs>
+        <pattern id="837c3e70-6c3a-44e6-8854-cc48c737b659" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect x="0" y="0" width="4" height="4" class="text-indigo-50" fill="currentColor"></rect>
+        </pattern>
+      </defs>
+      <rect width="404" height="392" fill="url(#837c3e70-6c3a-44e6-8854-cc48c737b659)"></rect>
+    </svg>
+  </div>
+  <div class="hidden sm:block absolute bottom-0 left-0 -mb-20 -ml-20">
+    <svg width="404" height="392" fill="none" viewBox="0 0 404 392">
+      <defs>
+        <pattern id="837c3e70-6c3a-44e6-8854-cc48c737b659" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+          <rect x="0" y="0" width="4" height="4" class="text-indigo-50" fill="currentColor"></rect>
+        </pattern>
+      </defs>
+      <rect width="404" height="392" fill="url(#837c3e70-6c3a-44e6-8854-cc48c737b659)"></rect>
+    </svg>
+  </div>
+
+  <div class="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+    <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 tracking-tight">Create an account</h2>
+    <p class="mt-2 text-center text-sm text-gray-600">
+      Join HireConnect to find your next opportunity
+    </p>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+    <div class="bg-white py-8 px-4 shadow-xl shadow-indigo-100/50 sm:rounded-2xl sm:px-10 border border-gray-100">
+      
+      <!-- Role Selector -->
+      <div class="flex p-1 bg-gray-100 rounded-xl mb-8">
+        <button 
+          type="button" 
+          class="flex-1 flex justify-center items-center py-2.5 text-sm font-medium rounded-lg transition-all" 
+          [ngClass]="selectedRole === 'CANDIDATE' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+          (click)="selectRole('CANDIDATE')"
+        >
+          <span class="material-symbols-rounded mr-2 text-lg leading-none">person</span>
+          Job Seeker
+        </button>
+        <button 
+          type="button" 
+          class="flex-1 flex justify-center items-center py-2.5 text-sm font-medium rounded-lg transition-all" 
+          [ngClass]="selectedRole === 'RECRUITER' ? 'bg-white text-indigo-700 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+          (click)="selectRole('RECRUITER')"
+        >
+          <span class="material-symbols-rounded mr-2 text-lg leading-none">business</span>
+          Employer
+        </button>
+      </div>
+
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-5">
+        <input type="hidden" formControlName="role">
+
+        <!-- Full Name -->
+        <div>
+          <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+          <div class="mt-1">
+            <input 
+              id="fullName" 
+              type="text" 
+              formControlName="fullName" 
+              placeholder="John Doe" 
+              class="appearance-none block w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
+              [ngClass]="{'border-red-300 focus:ring-red-500 focus:border-red-500': fullName?.invalid && fullName?.touched}"
+            >
+          </div>
+          <div *ngIf="fullName?.invalid && fullName?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="fullName?.errors?.['required']">Full name is required</span>
+            <span *ngIf="fullName?.errors?.['minlength']">Name must be at least 2 characters</span>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+          <div class="mt-1">
+            <input 
+              id="email" 
+              type="email" 
+              formControlName="email" 
+              placeholder="you@example.com" 
+              class="appearance-none block w-full px-3 py-2.5 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
+              [ngClass]="{'border-red-300 focus:ring-red-500 focus:border-red-500': email?.invalid && email?.touched}"
+            >
+          </div>
+          <div *ngIf="email?.invalid && email?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="email?.errors?.['required']">Email is required</span>
+            <span *ngIf="email?.errors?.['email']">Please enter a valid email</span>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+          <div class="mt-1 relative">
+            <input 
+              id="password" 
+              [type]="showPassword ? 'text' : 'password'" 
+              formControlName="password" 
+              placeholder="••••••••" 
+              class="appearance-none block w-full px-3 py-2.5 pr-20 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
+              [ngClass]="{'border-red-300 focus:ring-red-500 focus:border-red-500': password?.invalid && password?.touched}"
+            >
+            <button
+              type="button"
+              class="absolute inset-y-0 right-3 my-auto h-8 px-2 text-sm font-semibold text-indigo-600 hover:text-indigo-700 focus:outline-none"
+              (click)="togglePasswordVisibility()"
+              [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'"
+            >
+              {{ showPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <div *ngIf="password?.invalid && password?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="password?.errors?.['required']">Password is required</span>
+            <span *ngIf="password?.errors?.['passwordStrength']">Use 8+ chars with uppercase, lowercase, number, and symbol</span>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div>
+          <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+          <div class="mt-1 relative">
+            <input 
+              id="confirmPassword" 
+              [type]="showConfirmPassword ? 'text' : 'password'" 
+              formControlName="confirmPassword" 
+              placeholder="••••••••" 
+              class="appearance-none block w-full px-3 py-2.5 pr-20 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
+              [ngClass]="{'border-red-300 focus:ring-red-500 focus:border-red-500': (confirmPassword?.invalid || registerForm.errors?.['mismatch']) && confirmPassword?.touched}"
+            >
+            <button
+              type="button"
+              class="absolute inset-y-0 right-3 my-auto h-8 px-2 text-sm font-semibold text-indigo-600 hover:text-indigo-700 focus:outline-none"
+              (click)="toggleConfirmPasswordVisibility()"
+              [attr.aria-label]="showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'"
+            >
+              {{ showConfirmPassword ? 'Hide' : 'Show' }}
+            </button>
+          </div>
+          <div *ngIf="confirmPassword?.touched" class="mt-1 text-sm text-red-600">
+            <span *ngIf="confirmPassword?.errors?.['required']">Please confirm your password</span>
+            <span *ngIf="registerForm.errors?.['mismatch']">Passwords do not match</span>
+          </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="flex items-start">
+          <div class="flex items-center h-5">
+            <input 
+              id="acceptTerms" 
+              type="checkbox" 
+              formControlName="acceptTerms" 
+              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+              [ngClass]="{'border-red-300': acceptTerms?.invalid && acceptTerms?.touched}"
+            >
+          </div>
+          <div class="ml-2 text-sm">
+            <label for="acceptTerms" class="font-medium text-gray-700">
+              I agree to the
+              <button type="button" class="legal-link" (click)="showLegalPanel('terms')">Terms of Service</button>
+              and
+              <button type="button" class="legal-link" (click)="showLegalPanel('privacy')">Privacy Policy</button>
+            </label>
+            <p *ngIf="acceptTerms?.invalid && acceptTerms?.touched" class="text-red-600 mt-1 text-xs">You must accept the terms to continue</p>
+          </div>
+        </div>
+
+        <section class="legal-content" aria-label="Registration legal information">
+          <div class="legal-tabs" role="tablist" aria-label="Legal content">
+            <button
+              type="button"
+              role="tab"
+              [attr.aria-selected]="activeLegalPanel === 'terms'"
+              [class.active]="activeLegalPanel === 'terms'"
+              (click)="showLegalPanel('terms')"
+            >
+              <span class="material-symbols-rounded">contract</span>
+              Terms
+            </button>
+            <button
+              type="button"
+              role="tab"
+              [attr.aria-selected]="activeLegalPanel === 'privacy'"
+              [class.active]="activeLegalPanel === 'privacy'"
+              (click)="showLegalPanel('privacy')"
+            >
+              <span class="material-symbols-rounded">shield_lock</span>
+              Privacy
+            </button>
+          </div>
+
+          <div class="legal-panel" *ngIf="activeLegalPanel === 'terms'">
+            <h3>Terms of Service</h3>
+            <p>
+              HireConnect helps candidates discover opportunities and helps recruiters manage hiring activity. By creating an account, you agree to use the platform only for lawful recruiting, job search, and career communication.
+            </p>
+            <ul>
+              <li>Provide accurate account, profile, job, and application information.</li>
+              <li>Do not post misleading jobs, spam users, misuse candidate data, or attempt unauthorized access.</li>
+              <li>Recruiters are responsible for their job posts, candidate communication, subscriptions, invoices, and payment activity.</li>
+              <li>HireConnect may suspend accounts or remove content that violates platform rules or applicable law.</li>
+            </ul>
+          </div>
+
+          <div class="legal-panel" *ngIf="activeLegalPanel === 'privacy'">
+            <h3>Privacy Policy</h3>
+            <p>
+              We collect the information needed to operate your HireConnect account, including profile details, contact information, applications, messages, job posts, interviews, notifications, and subscription records.
+            </p>
+            <ul>
+              <li>Candidates control the profile and resume information shared during applications.</li>
+              <li>Recruiters may view candidate information connected to jobs, applications, interviews, and messages.</li>
+              <li>Payment details are processed by payment providers and are not stored as full card or UPI credentials by HireConnect.</li>
+              <li>We use account data for authentication, security, notifications, support, analytics, and platform improvement.</li>
+            </ul>
+          </div>
+        </section>
+
+        <div>
+          <button 
+            type="submit" 
+            [disabled]="isLoading || registerForm.invalid"
+            class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          >
+            <svg *ngIf="isLoading" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span *ngIf="!isLoading">Create Account</span>
+            <span *ngIf="isLoading">Creating account...</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="mt-6">
+        <div class="relative">
+          <div class="absolute inset-0 flex items-center">
+            <div class="w-full border-t border-gray-200"></div>
+          </div>
+          <div class="relative flex justify-center text-sm">
+            <span class="px-2 bg-white text-gray-500">
+              Or sign up with
+            </span>
+          </div>
+        </div>
+
+        <div class="mt-6">
+          <button 
+            (click)="loginWithGitHub()" 
+            class="w-full inline-flex justify-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+          >
+            <svg class="w-5 h-5 mr-2 text-gray-900" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clip-rule="evenodd" />
+            </svg>
+            Continue with GitHub
+          </button>
+        </div>
+      </div>
+      
+      <p class="mt-8 text-center text-sm text-gray-600">
+        Already have an account? 
+        <a routerLink="/auth/login" class="font-medium text-indigo-600 hover:text-indigo-500 transition-colors">Sign in</a>
+      </p>
+    </div>
+  </div>
+</div>

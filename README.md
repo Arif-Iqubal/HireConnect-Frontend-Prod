@@ -1,59 +1,91 @@
-# HireconnectFrontend
+# HireConnect Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.5.
+HireConnect Frontend is the Angular client for the HireConnect recruitment platform. It provides role-based experiences for candidates, recruiters, and admins and communicates with the Spring Boot microservices backend through the API Gateway.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- Candidate registration and login
+- Candidate profile and dashboard flows
+- Job browsing and application tracking
+- Recruiter job, application, and interview workflows
+- Notifications and application status updates
+- Subscription and analytics screens where integrated
+- JWT-based authenticated API calls
 
-```bash
-ng serve
+## Tech Stack
+
+- Angular
+- TypeScript
+- Angular Router
+- Angular Forms
+- RxJS
+- Angular Material/CDK
+- Chart.js and ng2-charts
+- ngx-toastr
+- Tailwind CSS / app styling
+- Karma/Jasmine test setup
+- Docker and Nginx for containerized serving
+- SonarQube project configuration
+
+## Project Structure
+
+```text
+src/
+  app/
+    core/        shared API, auth, guards, interceptors, and models
+    features/    role and feature modules
+  assets/        static assets
+  environments/ environment configuration
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Local Setup
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Install dependencies:
 
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Run the development server:
 
 ```bash
-ng generate --help
+npm start
 ```
 
-## Building
+Open:
 
-To build the project run:
+```text
+http://localhost:4200
+```
+
+Build for production:
 
 ```bash
-ng build
+npm run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+Run tests:
 
 ```bash
-ng test
+npm test
 ```
 
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
+Run coverage:
 
 ```bash
-ng e2e
+npm run test:coverage
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Backend Integration
 
-## Additional Resources
+The frontend expects the backend API Gateway to be available locally, typically at:
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+```text
+http://localhost:8080
+```
+
+Authentication uses JWT tokens. Protected API calls include the bearer token and the backend services apply role-based authorization for candidate, recruiter, and admin workflows.
+
+## Repository Notes
+
+Generated output such as `node_modules`, Angular build artifacts, coverage reports, Sonar output, logs, local environment files, and IDE metadata are ignored by `.gitignore`.

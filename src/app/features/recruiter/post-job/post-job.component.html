@@ -1,0 +1,262 @@
+<!-- src/app/features/recruiter/post-job/post-job.component.html -->
+<div class="post-job-container">
+  <div class="page-header">
+    <h1>{{ isEditMode ? 'Edit Job Posting' : 'Post a New Job' }}</h1>
+    <p>{{ isEditMode ? 'Update your job posting details' : 'Create a compelling job listing to attract the best talent' }}</p>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoadingJob">
+    <div class="spinner"></div>
+    <p>Loading job details...</p>
+  </div>
+
+  <form [formGroup]="jobForm" (ngSubmit)="onSubmit()" *ngIf="!isLoadingJob">
+    <!-- Basic Information -->
+    <div class="form-section">
+      <h2>Basic Information</h2>
+
+      <div class="company-preview">
+        <img
+          *ngIf="recruiterLogoUrl; else companyInitialsTpl"
+          [src]="recruiterLogoUrl"
+          alt="Company logo"
+          class="company-logo"
+        >
+        <ng-template #companyInitialsTpl>
+          <div class="company-logo initials">{{ companyInitials }}</div>
+        </ng-template>
+        <div>
+          <span class="preview-label">Posting as</span>
+          <strong>{{ companyName?.value || recruiterCompanyName || 'Your company' }}</strong>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label for="title">Job Title <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="title" 
+          formControlName="title" 
+          placeholder="e.g., Senior Frontend Developer"
+          [class.error]="title?.invalid && title?.touched"
+        >
+        <div class="error-message" *ngIf="title?.invalid && title?.touched">
+          <span *ngIf="title?.errors?.['required']">Job title is required</span>
+          <span *ngIf="title?.errors?.['minlength']">Title must be at least 5 characters</span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="category">Category <span class="required">*</span></label>
+          <select id="category" formControlName="category" [class.error]="category?.invalid && category?.touched">
+            <option value="">Select category</option>
+            <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+          </select>
+          <div class="error-message" *ngIf="category?.invalid && category?.touched">
+            Category is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="type">Job Type <span class="required">*</span></label>
+          <select id="type" formControlName="type">
+            <option *ngFor="let type of jobTypes" [value]="type.value">{{ type.label }}</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="location">Location <span class="required">*</span></label>
+        <input 
+          type="text" 
+          id="location" 
+          formControlName="location" 
+          placeholder="e.g., San Francisco, CA or Remote"
+          [class.error]="location?.invalid && location?.touched"
+        >
+        <div class="error-message" *ngIf="location?.invalid && location?.touched">
+          Location is required
+        </div>
+      </div>
+
+      <div class="form-row">
+  <div class="form-group">
+    <label for="companyName">
+      Company Name <span class="required">*</span>
+    </label>
+
+    <input
+      type="text"
+      id="companyName"
+      formControlName="companyName"
+      placeholder="Enter company name"
+      [class.error]="companyName?.invalid && companyName?.touched"
+    />
+
+    <div
+      class="error-message"
+      *ngIf="companyName?.invalid && companyName?.touched"
+    >
+      Company name is required
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="vacancies">
+      Number of Vacancies <span class="required">*</span>
+    </label>
+
+    <input
+      type="number"
+      id="vacancies"
+      formControlName="vacancies"
+      min="1"
+      [class.error]="vacancies?.invalid && vacancies?.touched"
+    />
+
+    <div
+      class="error-message"
+      *ngIf="vacancies?.invalid && vacancies?.touched"
+    >
+      Enter valid vacancies
+    </div>
+  </div>
+</div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="salaryMin">Minimum Salary <span class="required">*</span></label>
+          <input 
+            type="number" 
+            id="salaryMin" 
+            formControlName="salaryMin" 
+            placeholder="₹"
+            [class.error]="salaryMin?.invalid && salaryMin?.touched"
+          >
+          <div class="error-message" *ngIf="salaryMin?.invalid && salaryMin?.touched">
+            Minimum salary is required
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="salaryMax">Maximum Salary <span class="required">*</span></label>
+          <input 
+            type="number" 
+            id="salaryMax" 
+            formControlName="salaryMax" 
+            placeholder="₹"
+            [class.error]="salaryMax?.invalid && salaryMax?.touched"
+          >
+          <div class="error-message" *ngIf="salaryMax?.invalid && salaryMax?.touched">
+            Maximum salary is required
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+  <div class="form-group checkbox-group">
+    <label>
+      <input type="checkbox" formControlName="isRemote" />
+      Remote Job
+    </label>
+  </div>
+
+  <div class="form-group">
+    <label for="expiresAt">
+      Expiry Date <span class="required">*</span>
+    </label>
+
+    <input
+      type="date"
+      id="expiresAt"
+      formControlName="expiresAt"
+      [class.error]="expiresAt?.invalid && expiresAt?.touched"
+    />
+
+    <div
+      class="error-message"
+      *ngIf="expiresAt?.invalid && expiresAt?.touched"
+    >
+      <span *ngIf="expiresAt?.errors?.['required']">
+        Expiry date is required
+      </span>
+
+      <span *ngIf="expiresAt?.errors?.['invalidFutureDate']">
+        Expiry date must be in the future
+      </span>
+    </div>
+  </div>
+</div>
+
+      <div class="form-group">
+        <label for="experience">Experience Level <span class="required">*</span></label>
+        <select id="experience" formControlName="experienceRequired" [class.error]="experienceRequired?.invalid && experienceRequired?.touched">
+          <option value="">Select experience level</option>
+          <option *ngFor="let level of experienceLevels" [value]="level">{{ level }}</option>
+        </select>
+        <div class="error-message" *ngIf="experienceRequired?.invalid && experienceRequired?.touched">
+          Experience level is required
+        </div>
+      </div>
+    </div>
+
+    <!-- Skills -->
+    <div class="form-section">
+      <h2>Required Skills</h2>
+      
+      <div formArrayName="skills">
+        <div class="tags-container">
+          <span class="tag" *ngFor="let skill of skills.controls; let i = index">
+            {{ skill.value }}
+            <button type="button" class="tag-remove" (click)="removeSkill(i)">×</button>
+          </span>
+        </div>
+        
+        <div class="add-tag">
+          <input 
+            type="text" 
+            #skillInput 
+            placeholder="Type a skill and press Enter"
+            (keyup.enter)="addSkillFromInput(skillInput)"
+          >
+          <button type="button" class="btn-add" (click)="addSkillFromInput(skillInput)">Add</button>
+        </div>
+        
+        <div class="error-message" *ngIf="skills.invalid && skills.touched">
+          Add at least one skill
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Description -->
+    <div class="form-section">
+      <h2>Job Description</h2>
+      
+      <div class="form-group">
+        <label for="description">Description <span class="required">*</span></label>
+        <textarea 
+          id="description" 
+          formControlName="description" 
+          rows="6"
+          placeholder="Describe the role, responsibilities, and what makes this opportunity unique..."
+          [class.error]="description?.invalid && description?.touched"
+        ></textarea>
+        <div class="error-message" *ngIf="description?.invalid && description?.touched">
+          <span *ngIf="description?.errors?.['required']">Description is required</span>
+          <span *ngIf="description?.errors?.['minlength']">Description must be at least 50 characters</span>
+        </div>
+        <small class="char-count">{{ description?.value?.length || 0 }} characters</small>
+      </div>
+    </div>
+
+    <!-- Requirements -->
+   
+    <!-- Form Actions -->
+    <div class="form-actions">
+      <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+        <span *ngIf="!isSubmitting">{{ isEditMode ? 'Update Job' : 'Post Job' }}</span>
+        <span *ngIf="isSubmitting" class="spinner"></span>
+      </button>
+    </div>
+  </form>
+</div>

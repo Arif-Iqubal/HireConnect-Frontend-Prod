@@ -1,1 +1,590 @@
-/* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// src/styles.scss
+:root {
+  --hc-bg: #f6f8fb;
+  --hc-surface: #ffffff;
+  --hc-surface-soft: #f8fafc;
+  --hc-text: #101828;
+  --hc-muted: #667085;
+  --hc-border: #e4e7ec;
+  --hc-border-strong: #d0d5dd;
+  --hc-primary: #2563eb;
+  --hc-primary-dark: #1d4ed8;
+  --hc-navy: #172033;
+  --hc-success: #15803d;
+  --hc-warning: #b45309;
+  --hc-danger: #dc2626;
+  --hc-radius: 8px;
+  --hc-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+  --hc-shadow-hover: 0 16px 34px rgba(15, 23, 42, 0.10);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  line-height: 1.6;
+  color: var(--hc-text);
+  background: var(--hc-bg);
+}
+
+.material-symbols-rounded {
+ font-family: 'Material Symbols Rounded', sans-serif;
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.25rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+/* HireConnect unified product theme */
+body .rounded-3xl,
+body .rounded-2xl,
+body .rounded-xl {
+  border-radius: var(--hc-radius) !important;
+}
+
+body .shadow-xl,
+body .shadow-lg,
+body .shadow-md,
+body .shadow-sm,
+body .hover\:shadow-md:hover,
+body .hover\:shadow-lg:hover,
+body .hover\:shadow-xl:hover {
+  box-shadow: var(--hc-shadow) !important;
+}
+
+body .bg-gradient-to-br {
+  background-image: linear-gradient(135deg, var(--hc-navy), var(--hc-primary)) !important;
+}
+
+body .blur-3xl.rounded-full {
+  display: none !important;
+}
+
+body .text-indigo-600,
+body .hover\:text-indigo-600:hover,
+body .hover\:text-indigo-800:hover {
+  color: var(--hc-primary) !important;
+}
+
+body .bg-indigo-600,
+body .hover\:bg-indigo-700:hover {
+  background-color: var(--hc-primary) !important;
+}
+
+body .bg-indigo-900 {
+  background-color: var(--hc-navy) !important;
+}
+
+body .focus\:ring-indigo-500:focus,
+body .focus\:ring-indigo-500:focus-visible {
+  --tw-ring-color: rgba(37, 99, 235, .35) !important;
+}
+
+body .focus\:border-indigo-500:focus {
+  border-color: var(--hc-primary) !important;
+}
+
+body .border-gray-100,
+body .border-gray-200 {
+  border-color: var(--hc-border) !important;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .notifications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container,
+  .dashboard-container,
+  .manage-jobs-container,
+  .post-job-container,
+  .subscription-container,
+  .analytics-container,
+  .job-detail-container,
+  .users-container,
+  .admin-page,
+  .detail-container,
+  .callback-container
+) {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 24px;
+  color: var(--hc-text);
+}
+
+:is(.page-header, .dashboard-header, .profile-header) {
+  margin-bottom: 24px;
+}
+
+:is(.page-header, .dashboard-header, .profile-header) h1,
+:is(.page-header, .dashboard-header, .profile-header) h2 {
+  color: var(--hc-text) !important;
+  font-size: clamp(1.75rem, 3vw, 2.35rem) !important;
+  line-height: 1.12 !important;
+  letter-spacing: 0 !important;
+  font-weight: 850 !important;
+}
+
+:is(.page-header, .dashboard-header, .profile-header) p {
+  color: var(--hc-muted) !important;
+}
+
+:is(
+  .card,
+  .auth-card,
+  .form-section,
+  .profile-section,
+  .profile-hero,
+  .dashboard-section,
+  .analytics-card,
+  .summary-card,
+  .metric-card,
+  .job-card,
+  .application-card,
+  .interview-card,
+  .wallet-card,
+  .transaction-card,
+  .plan-card,
+  .subscription-card,
+  .report-card,
+  .settings-card,
+  .notification-item,
+  .applications-table,
+  .users-table,
+  .jobs-table,
+  .table-card,
+  .filter-tabs,
+  .empty-state,
+  .loading-state
+) {
+  background: var(--hc-surface) !important;
+  border: 1px solid var(--hc-border) !important;
+  border-radius: var(--hc-radius) !important;
+  box-shadow: var(--hc-shadow) !important;
+}
+
+:is(.card, .job-card, .application-card, .interview-card, .notification-item, .plan-card):hover {
+  box-shadow: var(--hc-shadow-hover) !important;
+}
+
+:is(.btn-primary, .btn-submit, .btn-add, .btn-apply, .btn-export, .btn-mark-all, .btn-save, .btn-action.primary) {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--hc-primary) !important;
+  border-radius: var(--hc-radius) !important;
+  background: var(--hc-primary) !important;
+  background-image: none !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  box-shadow: 0 10px 22px rgba(37, 99, 235, .18) !important;
+}
+
+:is(.btn-primary, .btn-submit, .btn-add, .btn-apply, .btn-export, .btn-mark-all, .btn-save, .btn-action.primary):hover:not(:disabled) {
+  background: var(--hc-primary-dark) !important;
+  transform: translateY(-1px);
+}
+
+:is(.btn-outline, .btn-secondary, .btn-cancel, .btn-share, .btn-icon, .btn-action) {
+  border-radius: var(--hc-radius) !important;
+  border-color: var(--hc-border-strong) !important;
+}
+
+:is(input, select, textarea) {
+  border-radius: var(--hc-radius) !important;
+}
+
+:is(input, select, textarea):focus {
+  border-color: var(--hc-primary) !important;
+  outline: none !important;
+}
+
+:is(.status-badge, .badge, .pill, .tag, .skill-tag, .meta-pill) {
+  border-radius: var(--hc-radius) !important;
+  font-weight: 750 !important;
+}
+
+:is(.tag, .skill-tag, .pill) {
+  background: #eff6ff !important;
+  color: var(--hc-primary-dark) !important;
+  border: 1px solid #dbeafe !important;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+thead {
+  background: var(--hc-surface-soft);
+}
+
+th {
+  color: #475467;
+  font-size: .78rem;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+td {
+  color: var(--hc-text);
+  border-top: 1px solid var(--hc-border);
+}
+
+@media (max-width: 768px) {
+  :is(
+    .applications-container,
+    .application-detail-container,
+    .notifications-container,
+    .interviews-container,
+    .saved-jobs-container,
+    .wallet-container,
+    .profile-container,
+    .dashboard-container,
+    .manage-jobs-container,
+    .post-job-container,
+    .subscription-container,
+    .analytics-container,
+    .job-detail-container,
+    .users-container,
+    .admin-page,
+    .detail-container
+  ) {
+    padding: 16px;
+  }
+}
+
+/* Candidate section visual pass */
+app-candidate-dashboard {
+  display: block;
+  background: var(--hc-bg);
+}
+
+app-candidate-dashboard .min-h-screen {
+  min-height: calc(100vh - 64px);
+  background: var(--hc-bg) !important;
+}
+
+app-candidate-dashboard .max-w-7xl {
+  max-width: 1180px;
+}
+
+app-candidate-dashboard h1 {
+  color: var(--hc-text) !important;
+  font-size: clamp(1.75rem, 3vw, 2.35rem) !important;
+  line-height: 1.12 !important;
+  letter-spacing: 0 !important;
+  font-weight: 850 !important;
+}
+
+app-candidate-dashboard :is(.bg-white, .rounded-2xl, .rounded-xl) {
+  border-radius: var(--hc-radius) !important;
+}
+
+app-candidate-dashboard :is(.shadow-sm, .hover\:shadow-md:hover, .hover\:shadow-lg:hover) {
+  box-shadow: var(--hc-shadow) !important;
+}
+
+app-candidate-dashboard :is(.border-gray-100, .border-gray-50) {
+  border-color: var(--hc-border) !important;
+}
+
+app-candidate-dashboard :is(.bg-indigo-600, .hover\:bg-indigo-700:hover) {
+  background-color: var(--hc-primary) !important;
+}
+
+app-candidate-dashboard :is(.text-indigo-600, .hover\:text-indigo-800:hover) {
+  color: var(--hc-primary) !important;
+}
+
+app-candidate-dashboard .material-symbols-rounded {
+  font-size: 1.15rem;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .notifications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container
+) {
+  max-width: 1180px !important;
+  padding-top: 28px !important;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .notifications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container
+) :is(.page-header, .profile-header) {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 0;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .notifications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container
+) :is(.page-header h1, .profile-header h1) {
+  color: var(--hc-text) !important;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .notifications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container
+) :is(.page-header p, .profile-header p) {
+  max-width: 680px;
+  margin-top: 6px;
+  color: var(--hc-muted) !important;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .notifications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container
+) :is(.profile-hero, .profile-section, .applications-table, .interviews-section, .notification-item, .wallet-card, .saved-job-card, .job-card, .empty-state, .loading-state) {
+  border: 1px solid var(--hc-border) !important;
+  border-radius: var(--hc-radius) !important;
+  background: var(--hc-surface) !important;
+  box-shadow: var(--hc-shadow) !important;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .notifications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container
+) :is(.status-filter, .filter-tabs) {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border: 1px solid var(--hc-border) !important;
+  border-radius: var(--hc-radius) !important;
+  background: var(--hc-surface) !important;
+  box-shadow: none !important;
+}
+
+:is(
+  .applications-container,
+  .notifications-container
+) :is(.filter-btn, .filter-tab) {
+  border-radius: var(--hc-radius) !important;
+  color: #475467 !important;
+}
+
+:is(
+  .applications-container,
+  .notifications-container
+) :is(.filter-btn.active, .filter-tab.active) {
+  background: var(--hc-navy) !important;
+  color: #fff !important;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container
+) :is(.btn-primary, .btn-apply, .btn-save, .btn-add) {
+  border-radius: var(--hc-radius) !important;
+  background: var(--hc-primary) !important;
+  background-image: none !important;
+}
+
+:is(
+  .applications-container,
+  .application-detail-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .profile-container
+) :is(.btn-outline, .btn-outline-sm, .btn-cancel) {
+  border: 1px solid var(--hc-border-strong) !important;
+  border-radius: var(--hc-radius) !important;
+  background: #fff !important;
+  color: #344054 !important;
+}
+
+:is(
+  .profile-container,
+  .application-detail-container
+) :is(.brand-mark, .avatar-large, .profile-avatar) {
+  border-radius: var(--hc-radius) !important;
+  background: linear-gradient(135deg, var(--hc-navy), var(--hc-primary)) !important;
+}
+
+:is(
+  .applications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container
+) :is(table, .applications-table, .transactions-list, .jobs-grid, .interviews-list) {
+  width: 100%;
+}
+
+:is(
+  .applications-container,
+  .interviews-container,
+  .saved-jobs-container,
+  .wallet-container,
+  .notifications-container
+) .material-symbols-rounded {
+  color: currentColor;
+}
+
+@media (max-width: 768px) {
+  :is(
+    .applications-container,
+    .application-detail-container,
+    .notifications-container,
+    .interviews-container,
+    .saved-jobs-container,
+    .wallet-container,
+    .profile-container
+  ) :is(.page-header, .profile-header) {
+    flex-direction: column;
+  }
+}
+
+// Global button styles
+.btn-primary {
+  background: var(--hc-primary);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--hc-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--hc-primary);
+  border: 1px solid var(--hc-border-strong);
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--hc-radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  
+  &:hover {
+    background: var(--hc-surface-soft);
+    color: var(--hc-text);
+  }
+}
+
+// Status badges
+.status-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  
+  &.ACTIVE { background: #e8f5e9; color: #2e7d32; }
+  &.PAUSED { background: #fff3e0; color: #ef6c00; }
+  &.CLOSED { background: #ffebee; color: #c62828; }
+}
+
+// Card styles
+.card {
+  background: white;
+  border-radius: var(--hc-radius);
+  padding: 1.5rem;
+  box-shadow: var(--hc-shadow);
+  transition: all 0.3s;
+  
+  &:hover {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+}
+
+// Container
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+// Utility classes
+.text-center { text-align: center; }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.mb-3 { margin-bottom: 1.5rem; }
+
+// Loading spinner
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}/* You can add global styles to this file, and also import other style files */

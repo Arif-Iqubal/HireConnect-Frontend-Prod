@@ -1,0 +1,174 @@
+<!-- src/app/features/recruiter/manage-jobs/manage-jobs.component.html -->
+<div class="manage-jobs-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1>Manage Jobs</h1>
+        <p>View and manage all your job postings</p>
+      </div>
+      <a routerLink="/recruiter/post-job" class="btn-post-job">
+        <span class="material-symbols-rounded">add</span>
+        Post New Job
+      </a>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="quick-stats">
+    <div class="stat-card">
+      <span class="stat-number">{{ jobs.length }}</span>
+      <span class="stat-label">Total Jobs</span>
+    </div>
+    <div class="stat-card active">
+      <span class="stat-number">{{ getActiveJobsCount() }}</span>
+      <span class="stat-label">Active Jobs</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">{{ getTotalApplications() }}</span>
+      <span class="stat-label">Total Applications</span>
+    </div>
+  </div>
+
+  <!-- Search and Filter -->
+  <div class="toolbar">
+    <div class="search-box">
+      <input 
+        type="text" 
+        [formControl]="searchControl" 
+        placeholder="Search jobs by title, location, or category..."
+      >
+    </div>
+    <div class="filter-tabs">
+      <button 
+        *ngFor="let status of ['ALL', 'ACTIVE', 'PAUSED', 'CLOSED']"
+        class="filter-tab"
+        [class.active]="statusFilter.value === status"
+        (click)="statusFilter.setValue(status)">
+        {{ status }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading jobs...</p>
+  </div>
+
+  <!-- Jobs List -->
+  <div class="jobs-list" *ngIf="!isLoading">
+    <div class="job-card" *ngFor="let job of filteredJobs">
+      <div class="job-header">
+        <div class="job-title-section">
+          <img
+            *ngIf="recruiterLogoUrl; else jobCompanyInitials"
+            [src]="recruiterLogoUrl"
+            alt="Company logo"
+            class="company-logo"
+          >
+          <ng-template #jobCompanyInitials>
+            <div class="company-logo initials">{{ getCompanyInitials(job) }}</div>
+          </ng-template>
+          <div class="job-heading">
+            <h3>
+              <a [routerLink]="['/jobs', job.jobId]">{{ job.title }}</a>
+            </h3>
+            <p class="company-name">{{ getCompanyName(job) }}</p>
+          </div>
+          <span class="status-badge" [class]="job.status?.toLowerCase()">
+            {{ job.status }}
+          </span>
+        </div>
+        <div class="job-date">
+          Posted: {{ job.postedAt | date:'mediumDate' }}
+        </div>
+      </div>
+
+      <div class="job-details">
+        <div class="detail-item">
+          <span class="material-symbols-rounded detail-icon">location_on</span>
+          <span>{{ job.location }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="material-symbols-rounded detail-icon">business_center</span>
+          <span>{{ job.jobType?.replace('_', ' ') }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="material-symbols-rounded detail-icon">payments</span>
+          <span>{{ job.salaryMin | currency }} - {{ job.salaryMax | currency }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="material-symbols-rounded detail-icon">groups</span>
+          <span>{{ job.applicationsCount || 0 }} applications</span>
+        </div>
+        <div class="detail-item">
+          <span class="material-symbols-rounded detail-icon">visibility</span>
+          <span>{{ job.viewCount || 0 }} views</span>
+        </div>
+      </div>
+
+      <div class="job-skills" *ngIf="job.skills?.length">
+        <span class="skill-tag" *ngFor="let skill of job.skills.slice(0, 5)">
+          {{ skill }}
+        </span>
+        <span class="more-skills" *ngIf="job.skills.length > 5">
+          +{{ job.skills.length - 5 }} more
+        </span>
+      </div>
+
+      <div class="job-actions">
+        <div class="action-group">
+          <button class="btn-action" (click)="viewApplications(job.jobId)">
+            <span class="material-symbols-rounded">assignment</span>
+            Applications ({{ job.applicationsCount || 0 }})
+          </button>
+          <button class="btn-action" (click)="editJob(job.jobId)">
+            <span class="material-symbols-rounded">edit</span>
+            Edit
+          </button>
+        </div>
+        <div class="action-group">
+          <button 
+            *ngIf="job.status === 'ACTIVE'"
+            class="btn-action warning"
+            (click)="pauseJob(job.jobId)">
+            <span class="material-symbols-rounded">pause</span>
+            Pause
+          </button>
+          <button 
+            *ngIf="job.status === 'PAUSED'"
+            class="btn-action success"
+            (click)="resumeJob(job.jobId)">
+            <span class="material-symbols-rounded">play_arrow</span>
+            Resume
+          </button>
+          <button 
+            *ngIf="job.status !== 'CLOSED'"
+            class="btn-action danger"
+            (click)="closeJob(job.jobId)">
+            <span class="material-symbols-rounded">block</span>
+            Close
+          </button>
+          <button 
+            class="btn-action delete"
+            (click)="deleteJob(job.jobId)">
+            <span class="material-symbols-rounded">delete</span>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredJobs.length === 0">
+      <div class="empty-icon"><span class="material-symbols-rounded">post_add</span></div>
+      <h3>No Jobs Found</h3>
+      <p *ngIf="statusFilter.value !== 'ALL' || searchControl.value">
+        No jobs match your current filters.
+      </p>
+      <p *ngIf="statusFilter.value === 'ALL' && !searchControl.value">
+        You haven't posted any jobs yet. Start by creating your first job posting.
+      </p>
+      <a routerLink="/recruiter/post-job" class="btn-primary">Post Your First Job</a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+<!-- src/app/features/candidate/applications/my-applications.component.html -->
+<div class="applications-container">
+  <div class="page-header">
+    <h1>My Applications</h1>
+    <p>Track the status of all your job applications</p>
+  </div>
+
+  <!-- Status Filter -->
+  <div class="status-filter">
+    <button 
+      *ngFor="let status of statuses" 
+      class="filter-btn"
+      [class.active]="selectedStatus === status"
+      (click)="filterApplications(status)"
+    >
+      {{ status === 'ALL' ? 'All' : status.replace('_', ' ') }}
+    </button>
+  </div>
+
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading applications...</p>
+  </div>
+
+  <div class="applications-table" *ngIf="!isLoading">
+    <table>
+       <caption class="sr-only">
+      Applications table displaying job titles, companies, applied dates, statuses, and available actions
+    </caption>
+      <thead>
+        <tr>
+          <th>Job Title</th>
+          <th>Company</th>
+          <th>Applied Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let app of filteredApplications">
+          <td>
+            <a [routerLink]="['/jobs', app.jobId]">{{ app.job?.title || app.jobTitle }}</a>
+          </td>
+          <td>{{ app.job?.companyName || app.companyName }}</td>
+          <td>{{ app.appliedAt | date:'mediumDate' }}</td>
+          <td>
+            <span [class]="getStatusClass(app.status)">
+              {{ app.status.replace('_', ' ') }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <a [routerLink]="['/jobs', app.jobId]" class="btn-icon" title="View Job"><span class="material-symbols-rounded">visibility</span></a>
+              <button 
+                *ngIf="app.status === 'APPLIED'" 
+                class="btn-icon" 
+                title="Withdraw Application"
+                (click)="withdrawApplication(app.applicationId)"
+              >
+                <span class="material-symbols-rounded">close</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty-state" *ngIf="filteredApplications.length === 0">
+      <p>No applications found</p>
+      <a routerLink="/candidate/jobs" class="btn-primary">Browse Jobs</a>
+    </div>
+  </div>
+</div>

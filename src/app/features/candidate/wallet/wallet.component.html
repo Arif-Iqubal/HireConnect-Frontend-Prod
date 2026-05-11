@@ -1,0 +1,157 @@
+<!-- src/app/features/candidate/wallet/wallet.component.html -->
+<div class="wallet-container">
+  <div class="page-header">
+    <h1>My Wallet</h1>
+    <p>Manage your funds and transactions</p>
+  </div>
+
+  <!-- Balance Card -->
+  <div class="balance-card">
+    <div class="balance-content">
+      <div class="balance-info">
+        <span class="balance-label">Available Balance</span>
+        <span class="balance-amount">{{ balance | currency }}</span>
+      </div>
+      <button class="btn-add-money" (click)="openAddMoneyForm()">
+        <span class="material-symbols-rounded">add</span>
+        Add Money
+      </button>
+    </div>
+    <div class="balance-stats">
+      <div class="stat">
+        <span class="stat-label">Total Deposits</span>
+        <span class="stat-value deposit">{{ getTotalDeposits() | currency }}</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Total Spent</span>
+        <span class="stat-value spent">{{ getTotalSpent() | currency }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Money Form -->
+  <div class="add-money-form" *ngIf="showAddMoneyForm">
+    <div class="form-overlay" (click)="closeAddMoneyForm()"></div>
+    <div class="form-content">
+      <div class="form-header">
+        <h2>Add Money to Wallet</h2>
+        <button class="btn-close" (click)="closeAddMoneyForm()">×</button>
+      </div>
+
+      <div class="form-group">
+        <label>Amount</label>
+        <div class="amount-input">
+          <span class="currency-symbol">₹</span>
+          <input 
+            type="number" 
+            [(ngModel)]="addAmount" 
+            placeholder="0.00"
+            min="10"
+            step="0.01"
+          >
+        </div>
+        <div class="quick-amounts">
+          <button 
+            *ngFor="let amount of [25, 50, 100, 200, 500]"
+            class="quick-amount"
+            [class.active]="addAmount === amount"
+            (click)="addAmount = amount">
+            ₹{{ amount }}
+          </button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Payment Method</label>
+        <div class="payment-methods">
+          <label 
+            class="payment-method"
+            *ngFor="let method of paymentMethods"
+            [class.selected]="selectedPaymentMethod === method.id">
+            <input 
+              type="radio" 
+              name="paymentMethod" 
+              [value]="method.id"
+              [(ngModel)]="selectedPaymentMethod"
+              style="display: none;">
+            <span class="material-symbols-rounded method-icon">{{ method.icon }}</span>
+            <span class="method-name">{{ method.name }}</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="form-summary">
+        <div class="summary-row">
+          <span>Amount</span>
+          <span>{{ (addAmount || 0) | currency }}</span>
+        </div>
+        <div class="summary-row">
+          <span>Fee</span>
+          <span class="free">Free</span>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <span>{{ (addAmount || 0) | currency }}</span>
+        </div>
+      </div>
+
+      <button 
+        class="btn-submit"
+        (click)="addMoney()"
+        [disabled]="!addAmount || addAmount < 10 || isAddingMoney">
+        {{ isAddingMoney ? 'Processing...' : 'Add Money' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Transaction History -->
+  <div class="transactions-section">
+    <div class="section-header">
+      <h2>Transaction History</h2>
+    </div>
+
+    <!-- Transaction Filters -->
+    <div class="transaction-filters">
+      <button 
+        *ngFor="let filter of ['ALL', 'DEPOSIT', 'WITHDRAWAL', 'PAYMENT']"
+        class="filter-btn"
+        [class.active]="activeFilter === filter"
+        (click)="filterTransactions(filter)">
+        {{ filter === 'ALL' ? 'All' : filter }}
+      </button>
+    </div>
+
+    <!-- Transactions List -->
+    <div class="transactions-list">
+      <div 
+        class="transaction-item"
+        *ngFor="let transaction of filteredTransactions"
+        [class]="getTransactionColor(transaction.type)">
+        
+        <div class="transaction-icon">
+          <span class="material-symbols-rounded">{{ getTransactionIcon(transaction.type) }}</span>
+        </div>
+
+        <div class="transaction-info">
+          <span class="transaction-description">{{ transaction.description }}</span>
+          <span class="transaction-date">{{ transaction.date | date:'mediumDate' }} at {{ transaction.date | date:'shortTime' }}</span>
+        </div>
+
+        <div class="transaction-amount">
+          <span class="amount" [class.positive]="transaction.amount > 0">
+            {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount | currency }}
+          </span>
+          <span class="status" [class]="getStatusClass(transaction.status)">
+            {{ transaction.status }}
+          </span>
+        </div>
+      </div>
+
+      <div class="empty-state" *ngIf="filteredTransactions.length === 0">
+        <div class="empty-icon"><span class="material-symbols-rounded">receipt_long</span></div>
+        <h3>No Transactions</h3>
+        <p>No {{ activeFilter === 'ALL' ? '' : activeFilter.toLowerCase() }} transactions found</p>
+      </div>
+    </div>
+  </div>
+</div>

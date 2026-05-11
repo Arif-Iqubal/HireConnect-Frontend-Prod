@@ -1,0 +1,200 @@
+<main class="home-page">
+  <section class="hero-section">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <span class="eyebrow">
+          <span class="material-symbols-rounded">verified</span>
+          Live hiring marketplace
+        </span>
+
+        <h1>HireConnect</h1>
+        <p class="hero-subtitle">
+          Discover active roles, compare companies, and move from search to application with a cleaner hiring workspace.
+        </p>
+
+        <form class="search-panel" (submit)="search($event)">
+          <label class="search-field">
+            <span class="material-symbols-rounded">search</span>
+            <input
+              type="text"
+              [formControl]="searchControl"
+              placeholder="Job title, skill, or company"
+              autocomplete="off"
+            >
+          </label>
+
+          <label class="search-field">
+            <span class="material-symbols-rounded">location_on</span>
+            <input
+              type="text"
+              [formControl]="locationControl"
+              placeholder="City or remote"
+              autocomplete="off"
+            >
+          </label>
+
+          <button class="btn-primary" type="submit">
+            <span class="material-symbols-rounded">manage_search</span>
+            Search Jobs
+          </button>
+        </form>
+
+        <div class="popular-searches" *ngIf="popularSearches.length">
+          <span>Popular searches</span>
+          <button type="button" *ngFor="let search of popularSearches" (click)="searchPopular(search)">
+            <span class="material-symbols-rounded">{{ search.icon }}</span>
+            {{ search.label }}
+            <small>{{ search.count }}</small>
+          </button>
+        </div>
+
+        <div class="hero-actions">
+          <button type="button" class="btn-secondary" (click)="getStarted()">
+            <span class="material-symbols-rounded">person_add</span>
+            Get Started
+          </button>
+          <button type="button" class="btn-ghost" (click)="postJob()">
+            <span class="material-symbols-rounded">post_add</span>
+            Post a Job
+          </button>
+        </div>
+      </div>
+
+      <aside class="live-panel" aria-label="Live platform overview">
+        <div class="panel-header">
+          <div>
+            <span>Now hiring</span>
+            <h2>Live platform overview</h2>
+          </div>
+          <button class="refresh-button" type="button" (click)="loadJobs()" title="Refresh data">
+            <span class="material-symbols-rounded">refresh</span>
+          </button>
+        </div>
+
+        <div class="stats-grid">
+          <article class="stat-card" *ngFor="let stat of stats">
+            <span class="material-symbols-rounded">{{ stat.icon }}</span>
+            <strong>{{ stat.value | number }}</strong>
+            <small>{{ stat.label }}</small>
+          </article>
+        </div>
+
+        <div class="spotlight" *ngIf="featuredJobs.length; else noSpotlight">
+          <div class="spotlight-company">{{ featuredJobs[0].companyName || 'Hiring company' }}</div>
+          <h3>{{ featuredJobs[0].title }}</h3>
+          <div class="spotlight-meta">
+            <span><span class="material-symbols-rounded">location_on</span>{{ featuredJobs[0].location || 'Flexible' }}</span>
+            <span><span class="material-symbols-rounded">payments</span>{{ salaryLabel(featuredJobs[0]) }}</span>
+          </div>
+          <a [routerLink]="['/jobs', featuredJobs[0].jobId]" class="spotlight-link">
+            View opening
+            <span class="material-symbols-rounded">arrow_forward</span>
+          </a>
+        </div>
+
+        <ng-template #noSpotlight>
+          <div class="empty-spotlight">
+            <span class="material-symbols-rounded">work_alert</span>
+            <p>{{ isLoading ? 'Loading live roles...' : 'No active jobs are available right now.' }}</p>
+          </div>
+        </ng-template>
+      </aside>
+    </div>
+  </section>
+
+  <section class="section-block" *ngIf="topCategories.length">
+    <div class="section-heading">
+      <span>Explore by demand</span>
+      <h2>Browse active categories</h2>
+      <p>These categories are built from the current jobs available on HireConnect.</p>
+    </div>
+
+    <div class="category-grid">
+      <button class="category-card" type="button" *ngFor="let category of topCategories" (click)="searchCategory(category.name)">
+        <span class="material-symbols-rounded">{{ category.icon }}</span>
+        <strong>{{ category.name }}</strong>
+        <small>{{ category.count | number }} {{ category.count === 1 ? 'role' : 'roles' }}</small>
+      </button>
+    </div>
+  </section>
+
+  <section class="section-block featured-section">
+    <div class="section-heading row-heading">
+      <div>
+        <span>Fresh opportunities</span>
+        <h2>Featured jobs</h2>
+        <p>Open roles are pulled from the jobs service and update as recruiters publish new posts.</p>
+      </div>
+      <a routerLink="/jobs" class="view-all">
+        View all jobs
+        <span class="material-symbols-rounded">arrow_forward</span>
+      </a>
+    </div>
+
+    <div class="jobs-grid" *ngIf="featuredJobs.length; else emptyJobs">
+      <article class="job-card" *ngFor="let job of featuredJobs; trackBy: trackByJobId">
+        <div class="job-card-header">
+          <div class="company-mark" *ngIf="!job.companyLogo">{{ companyInitial(job) }}</div>
+          <img *ngIf="job.companyLogo" [src]="job.companyLogo" [alt]="job.companyName + ' logo'" class="company-logo">
+          <div>
+            <h3>{{ job.title }}</h3>
+            <p>{{ job.companyName || 'Hiring company' }}</p>
+          </div>
+        </div>
+
+        <div class="job-meta">
+          <span><span class="material-symbols-rounded">location_on</span>{{ job.location || 'Flexible' }}</span>
+          <span><span class="material-symbols-rounded">business_center</span>{{ formatJobType(job.jobType) }}</span>
+          <span><span class="material-symbols-rounded">payments</span>{{ salaryLabel(job) }}</span>
+        </div>
+
+        <div class="skill-list" *ngIf="job.skills.length">
+          <span *ngFor="let skill of job.skills.slice(0, 3)">{{ skill }}</span>
+        </div>
+
+        <a [routerLink]="['/jobs', job.jobId]" class="job-link">
+          View details
+          <span class="material-symbols-rounded">open_in_new</span>
+        </a>
+      </article>
+    </div>
+
+    <ng-template #emptyJobs>
+      <div class="empty-state">
+        <span class="material-symbols-rounded">{{ isLoading ? 'hourglass_top' : 'work_off' }}</span>
+        <h3>{{ isLoading ? 'Loading opportunities' : 'No active jobs yet' }}</h3>
+        <p>{{ isLoading ? 'Fetching the latest open roles from the platform.' : 'When recruiters publish jobs, they will appear here automatically.' }}</p>
+      </div>
+    </ng-template>
+  </section>
+
+  <section class="workflow-section" *ngIf="topCompanies.length || topLocations.length || topJobTypes.length">
+    <div class="workflow-inner">
+      <div class="workflow-copy">
+        <span>Live marketplace data</span>
+        <h2>Current hiring snapshot</h2>
+        <p>
+          This overview is calculated from active job posts, so it changes as recruiters publish or close openings.
+        </p>
+      </div>
+
+      <div class="workflow-grid">
+        <article *ngIf="topCompanies.length">
+          <span class="material-symbols-rounded">apartment</span>
+          <h3>Companies hiring</h3>
+          <p *ngFor="let company of topCompanies">{{ company.name }} <strong>{{ company.count }}</strong></p>
+        </article>
+        <article *ngIf="topLocations.length">
+          <span class="material-symbols-rounded">location_on</span>
+          <h3>Active locations</h3>
+          <p *ngFor="let location of topLocations">{{ location.name }} <strong>{{ location.count }}</strong></p>
+        </article>
+        <article *ngIf="topJobTypes.length">
+          <span class="material-symbols-rounded">schedule</span>
+          <h3>Work types</h3>
+          <p *ngFor="let type of topJobTypes">{{ type.name }} <strong>{{ type.count }}</strong></p>
+        </article>
+      </div>
+    </div>
+  </section>
+</main>

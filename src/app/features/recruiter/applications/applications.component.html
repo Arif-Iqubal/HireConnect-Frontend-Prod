@@ -1,0 +1,235 @@
+<!-- src/app/features/recruiter/applications/applications.component.html -->
+<div class="applications-container">
+  <div class="page-header">
+    <h1>Applications Management</h1>
+    <p>Review and manage all incoming applications</p>
+  </div>
+
+  <!-- Stats Overview -->
+  <div class="stats-bar">
+    <button type="button" class="stat-item" [class.active]="!filterForm.get('status')?.value" (click)="filterByStatus('')">
+      <span class="stat-count">{{ getApplicationsCount() }}</span>
+      <span class="stat-label">Total</span>
+    </button>
+    <button type="button" class="stat-item" [class.active]="filterForm.get('status')?.value === 'APPLIED'" (click)="filterByStatus('APPLIED')">
+      <span class="stat-count">{{ getApplicationsCount('APPLIED') }}</span>
+      <span class="stat-label">Applied</span>
+    </button>
+    <button type="button" class="stat-item" [class.active]="filterForm.get('status')?.value === 'SHORTLISTED'" (click)="filterByStatus('SHORTLISTED')">
+      <span class="stat-count">{{ getApplicationsCount('SHORTLISTED') }}</span>
+      <span class="stat-label">Shortlisted</span>
+    </button>
+    <button type="button" class="stat-item" [class.active]="filterForm.get('status')?.value === 'INTERVIEW_SCHEDULED'" (click)="filterByStatus('INTERVIEW_SCHEDULED')">
+      <span class="stat-count">{{ getApplicationsCount('INTERVIEW_SCHEDULED') }}</span>
+      <span class="stat-label">Interview</span>
+    </button>
+    <button type="button" class="stat-item" [class.active]="filterForm.get('status')?.value === 'OFFERED'" (click)="filterByStatus('OFFERED')">
+      <span class="stat-count">{{ getApplicationsCount('OFFERED') }}</span>
+      <span class="stat-label">Offered</span>
+    </button>
+    <button type="button" class="stat-item" [class.active]="filterForm.get('status')?.value === 'REJECTED'" (click)="filterByStatus('REJECTED')">
+      <span class="stat-count">{{ getApplicationsCount('REJECTED') }}</span>
+      <span class="stat-label">Rejected</span>
+    </button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-section">
+    <form [formGroup]="filterForm">
+      <div class="filter-row">
+        <div class="filter-group search-group">
+          <input 
+            type="text" 
+            formControlName="search" 
+            placeholder="Search by candidate name, email, or job title..."
+            class="search-input"
+          >
+        </div>
+        <div class="filter-group">
+          <select formControlName="jobId">
+            <option value="">All Jobs</option>
+            <option *ngFor="let job of jobs" [value]="job.jobId">{{ job.title }}</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <select formControlName="status">
+            <option value="">All Status</option>
+            <option *ngFor="let status of statuses" [value]="status">{{ status.replace('_', ' ') }}</option>
+          </select>
+        </div>
+        <button type="button" class="btn-reset" (click)="resetFilters()">Reset</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading applications...</p>
+  </div>
+
+  <!-- Applications Table -->
+  <div class="applications-table" *ngIf="!isLoading">
+    <div class="table-responsive">
+      <table>
+         <caption class="sr-only">
+        Applications table displaying candidate details, job titles, applied dates, experience levels, statuses, and actions
+      </caption>
+        <thead>
+          <tr>
+            <th>Candidate</th>
+            <th>Job Title</th>
+            <th>Applied Date</th>
+            <th>Experience</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let app of filteredApplications" [class.highlight]="app.status === 'SHORTLISTED'">
+            <td>
+              <div class="candidate-info">
+                <div class="avatar">
+                  {{ getCandidateName(app).charAt(0).toUpperCase() }}
+                </div>
+                <div class="candidate-details">
+                  <span class="name">{{ getCandidateName(app) }}</span>
+                  <span class="email">{{ getCandidateEmail(app) }}</span>
+                </div>
+              </div>
+            </td>
+            <td>
+              <a [routerLink]="['/jobs', app.jobId]" class="job-link">{{ getJobTitle(app) }}</a>
+            </td>
+            <td>
+              <span class="applied-date">{{ app.appliedAt | date:'mediumDate' }}</span>
+              <small class="applied-time">{{ app.appliedAt | date:'shortTime' }}</small>
+            </td>
+            <td>
+              <div class="skills-preview">
+                <span class="skill-tag" *ngFor="let skill of getCandidateSkills(app).slice(0, 3)">
+                  {{ skill }}
+                </span>
+                <span class="more-skills" *ngIf="getCandidateSkills(app).length > 3">
+                  +{{ getCandidateSkills(app).length - 3 }}
+                </span>
+              </div>
+            </td>
+            <td>
+              <span class="status-badge" [class]="getStatusClass(app.status)">
+                {{ app.status.replace('_', ' ') }}
+              </span>
+            </td>
+            <td>
+              <div class="action-buttons">
+                <a [routerLink]="['/recruiter/applications', app.applicationId]" 
+                   class="btn-icon" 
+                   title="View Details">
+                  <span class="material-symbols-rounded">visibility</span>
+                </a>
+                <button 
+                  class="btn-icon" 
+                  title="Download Resume"
+                  (click)="downloadResume(app)">
+                  <span class="material-symbols-rounded">description</span>
+                </button>
+                <button 
+                  *ngIf="app.status === 'APPLIED'"
+                  class="btn-icon" 
+                  title="Shortlist"
+                  (click)="shortlistCandidate(app.applicationId)">
+                  <span class="material-symbols-rounded">star</span>
+                </button>
+                <button 
+                  *ngIf="canMessageCandidate(app)"
+                  class="btn-icon" 
+                  title="Message Candidate"
+                  (click)="openMessagePanel(app)">
+                  <span class="material-symbols-rounded">chat</span>
+                </button>
+                <button 
+                  *ngIf="canMessageCandidate(app)"
+                  class="btn-icon" 
+                  title="Schedule Interview"
+                  [routerLink]="['/recruiter/applications', app.applicationId]"
+                  [queryParams]="{ schedule: 'true' }">
+                  <span class="material-symbols-rounded">event</span>
+                </button>
+                <button 
+                  *ngIf="app.status !== 'REJECTED' && app.status !== 'OFFERED'"
+                  class="btn-icon text-danger" 
+                  title="Reject"
+                  (click)="rejectCandidate(app.applicationId)">
+                  <span class="material-symbols-rounded">close</span>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="empty-state" *ngIf="filteredApplications.length === 0">
+      <div class="empty-icon"><span class="material-symbols-rounded">assignment</span></div>
+      <h3>No Applications Found</h3>
+      <p *ngIf="filterForm.get('status')?.value || filterForm.get('search')?.value || filterForm.get('jobId')?.value">
+        No applications match your current filters.
+      </p>
+      <p *ngIf="!filterForm.get('status')?.value && !filterForm.get('search')?.value && !filterForm.get('jobId')?.value">
+        You haven't received any applications yet. Post more jobs to attract candidates.
+      </p>
+      <button class="btn-primary" (click)="resetFilters()" 
+              *ngIf="filterForm.get('status')?.value || filterForm.get('search')?.value || filterForm.get('jobId')?.value">
+        Clear Filters
+      </button>
+      <a routerLink="/recruiter/post-job" class="btn-primary" 
+         *ngIf="!filterForm.get('status')?.value && !filterForm.get('search')?.value && !filterForm.get('jobId')?.value">
+        Post a Job
+      </a>
+    </div>
+  </div>
+
+  <!-- Bulk Actions -->
+  <div class="bulk-actions" *ngIf="filteredApplications.length > 0 && !isLoading">
+    <span>{{ filteredApplications.length }} application(s) selected</span>
+    <div class="bulk-buttons">
+      <button type="button" class="btn-outline-sm" (click)="exportCsv()">Export CSV</button>
+      <button type="button" class="btn-outline-sm" (click)="composeBulkEmail()">Send Bulk Email</button>
+    </div>
+  </div>
+
+  <div class="message-overlay" *ngIf="messagePanelApplication">
+    <div class="message-panel">
+      <div class="message-panel-header">
+        <div>
+          <h2>Message Candidate</h2>
+          <p>{{ getCandidateName(messagePanelApplication) }} for {{ getJobTitle(messagePanelApplication) }}</p>
+        </div>
+        <button type="button" class="btn-close" (click)="closeMessagePanel()" [disabled]="isSendingMessage">
+          <span class="material-symbols-rounded">close</span>
+        </button>
+      </div>
+      <label>
+        Message
+        <textarea
+          [(ngModel)]="candidateMessage"
+          rows="5"
+          maxlength="1000"
+          [disabled]="isSendingMessage"
+          placeholder="Write a clear update for the candidate..."
+        ></textarea>
+      </label>
+      <p class="message-error" *ngIf="messageError">{{ messageError }}</p>
+      <div class="message-footer">
+        <span>{{ candidateMessage.length }}/1000</span>
+        <div>
+          <button type="button" class="btn-outline-sm" (click)="closeMessagePanel()" [disabled]="isSendingMessage">Cancel</button>
+          <button type="button" class="btn-primary-sm" (click)="sendMessageToCandidate()" [disabled]="isSendingMessage">
+            <span class="material-symbols-rounded">send</span>
+            {{ isSendingMessage ? 'Sending...' : 'Send Message' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

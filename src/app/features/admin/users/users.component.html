@@ -1,0 +1,156 @@
+<!-- src/app/features/admin/users/users.component.html -->
+<div class="users-container">
+  <div class="page-header">
+    <div class="header-content">
+      <div>
+        <h1>User Management</h1>
+        <p>Manage candidates, recruiters, admins and account access</p>
+      </div>
+      <button
+        (click)="exportUsers()"
+        class="inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-lg text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+      >
+        <svg class="w-4 h-4 mr-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Export Report
+      </button>
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="summary-icon users"><span class="material-symbols-rounded">groups</span></div>
+      <div>
+        <span>Total Users</span>
+        <strong>{{ users.length | number }}</strong>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon candidates"><span class="material-symbols-rounded">person_search</span></div>
+      <div>
+        <span>Candidates</span>
+        <strong>{{ getRoleCount('CANDIDATE') | number }}</strong>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon recruiters"><span class="material-symbols-rounded">business_center</span></div>
+      <div>
+        <span>Recruiters</span>
+        <strong>{{ getRoleCount('RECRUITER') | number }}</strong>
+      </div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-icon active"><span class="material-symbols-rounded">verified_user</span></div>
+      <div>
+        <span>Active</span>
+        <strong>{{ getStatusCount('ACTIVE') | number }}</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="filters-bar">
+    <div class="search-box">
+      <span class="material-symbols-rounded">search</span>
+      <input 
+        type="text" 
+        [formControl]="searchControl" 
+        placeholder="Search users by name or email..."
+      >
+    </div>
+    <select [formControl]="roleFilter">
+      <option *ngFor="let role of roles" [value]="role">
+        {{ role === 'ALL' ? 'All Roles' : role }}
+      </option>
+    </select>
+    <select [formControl]="statusFilter">
+      <option *ngFor="let status of statuses" [value]="status">
+        {{ status === 'ALL' ? 'All Status' : status }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Users Table -->
+  <div class="loading-state" *ngIf="isLoading">
+    <div class="spinner"></div>
+    <p>Loading users...</p>
+  </div>
+
+  <div class="table-responsive" *ngIf="!isLoading">
+    <table>
+        <caption class="sr-only">
+      Users table displaying user details, email addresses, roles, joining dates, activity, statuses, and actions
+    </caption>
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Joined</th>
+          <th>Activity</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers">
+          <td>
+            <div class="user-info">
+              <div class="avatar">{{ getUserInitial(user) }}</div>
+              <span class="name">{{ user.name }}</span>
+            </div>
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="role-badge" [class]="user.role.toLowerCase()">
+              {{ user.role }}
+            </span>
+          </td>
+          <td>{{ user.joinedAt | date:'mediumDate' }}</td>
+          <td class="activity-cell">
+            <strong>{{ getActivityLabel(user) }}</strong>
+            <span>{{ getActivityDate(user) | date:'mediumDate' }}</span>
+            <small>{{ getActivitySummary(user) }}</small>
+          </td>
+          <td>
+            <span class="status-badge" [class]="user.status.toLowerCase()">
+              {{ user.status }}
+            </span>
+          </td>
+          <td>
+            <div class="action-buttons">
+              <a [routerLink]="['/admin/users', user.id]" class="btn-icon" title="View Details">
+                <span class="material-symbols-rounded">visibility</span>
+              </a>
+              <button 
+                *ngIf="user.status === 'ACTIVE'"
+                class="btn-icon warning" 
+                title="Suspend"
+                (click)="suspendUser(user.id)">
+                <span class="material-symbols-rounded">block</span>
+              </button>
+              <button 
+                *ngIf="user.status === 'SUSPENDED'"
+                class="btn-icon success" 
+                title="Activate"
+                (click)="activateUser(user.id)">
+                <span class="material-symbols-rounded">check_circle</span>
+              </button>
+              <button 
+                class="btn-icon danger" 
+                title="Delete"
+                (click)="deleteUser(user.id)">
+                <span class="material-symbols-rounded">delete</span>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="empty-state" *ngIf="filteredUsers.length === 0">
+      <p>No users found matching your criteria</p>
+    </div>
+  </div>
+</div>
