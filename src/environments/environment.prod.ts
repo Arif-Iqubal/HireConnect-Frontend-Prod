@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiUrl: 'hireconnect-backend-prod-production.up.railway.app'
+  apiUrl: 'https://hireconnect-backend-prod-production.up.railway.app'
 };
