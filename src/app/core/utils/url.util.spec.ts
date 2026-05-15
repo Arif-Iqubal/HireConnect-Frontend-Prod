@@ -1,11 +1,13 @@
-import { getApiOrigin, getGatewayOrigin } from './url.util';
+import { environment } from '../../../environments/environment';
 
 describe('url.util', () => {
-  it('returns the configured API origin for absolute API URLs', () => {
-    expect(getApiOrigin()).toBe('http://localhost:8080');
+
+  it('returns configured API origin', () => {
+    expect(getApiOrigin()).toBe(environment.apiUrl);
   });
 
-  it('uses the API origin as the gateway origin', () => {
+  it('uses API origin as gateway origin', () => {
     expect(getGatewayOrigin()).toBe(getApiOrigin());
   });
+
 });
